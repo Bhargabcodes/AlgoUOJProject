@@ -24,7 +24,7 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/problems', problemRoutes); // Add the problem routes
 
 // --- Server Startup ---
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

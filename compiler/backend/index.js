@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
 const { generateFiles } = require("./generateFiles"); // Corrected import name
 const { executeCpp } = require("./executeCpp");
 
@@ -37,7 +38,7 @@ app.post("/execute", async (req, res) => {
 });
 
 // This service must run on a different port from your main backend
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
   console.log(`✅ Compiler service listening on port ${PORT}`);
