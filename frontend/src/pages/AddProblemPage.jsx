@@ -1,3 +1,4 @@
+//frontend\src\pages\AddProblemPage.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import Button from '../components/ui/Button';
@@ -50,7 +51,7 @@ const AddProblemPage = () => {
                 ...formData,
                 tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
             };
-            const { data } = await API.post('/problems', payload);
+            const { data } = await API.post('/problems/qn', payload);
             setStatus({ message: `Successfully created problem: "${data.title}"`, isError: false });
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'An unexpected error occurred.';

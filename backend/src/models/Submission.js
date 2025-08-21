@@ -9,7 +9,8 @@ const SubmissionSchema = new Schema({
         required: true 
     },
     problemId: { 
-        type: String 
+        type: Schema.Types.ObjectId, 
+        ref: 'Problem',            
     },
     language: { 
         type: String, 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import Button from '../components/ui/Button';
+import { CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
 
 const API = axios.create({ baseURL: 'http://localhost:5000/api' });
 
@@ -12,6 +13,31 @@ API.interceptors.request.use((req) => {
   }
   return req;
 });
+const TestCaseResult = ({ result, index }) => {
+    const getStatusInfo = (status) => {
+        switch (status) {
+            case 'Passed':
+                return { icon: <CheckCircle className="text-green-500" />, color: 'text-green-500' };
+            case 'Wrong Answer':
+                return { icon: <XCircle className="text-red-500" />, color: 'text-red-500' };
+            case 'Time Limit Exceeded':
+                return { icon: <Clock className="text-yellow-500" />, color: 'text-yellow-500' };
+            default:
+                return { icon: <AlertTriangle className="text-red-500" />, color: 'text-red-500' };
+        }
+    };
+    const { icon, color } = getStatusInfo(result.status);
+    
+    return (
+        <div className="flex items-center justify-between p-2 bg-gray-800 rounded-md">
+            <div className="flex items-center gap-2">
+                {icon}
+                <span className={`font-semibold ${color}`}>Test Case #{index + 1}</span>
+            </div>
+            <span className="text-gray-400 text-sm">{result.time.toFixed(2)} ms</span>
+        </div>
+    );
+};
 
 const CompilerPage = ({ problem }) => {
     const [code, setCode] = useState('');
@@ -33,7 +59,7 @@ const CompilerPage = ({ problem }) => {
         setSubmissionResult(null);
         if (!problem) {
             console.error("No problem selected.");
-            return; // #TODO: 
+            return;
         }
         try {
             const { data } = await API.post('/submissions/answer', {
@@ -99,12 +125,17 @@ const CompilerPage = ({ problem }) => {
                     </div>
                     <div className="bg-gray-900 p-4 rounded-lg font-mono text-sm flex-grow whitespace-pre-wrap overflow-y-auto">
                         {isLoading && <p>Running Test Cases...</p>}
-                        {submissionResult && (
+                          {submissionResult && submissionResult.status === 'Compilation Error' && (
                             <div>
-                                <p className={`font-bold text-lg ${getStatusColor(submissionResult.status)}`}>
-                                    {submissionResult.status}
-                                </p>
-                                <pre className="text-white mt-2">{submissionResult.output}</pre>
+                                <p className="font-bold text-lg text-red-500">Compilation Error</p>
+                                <pre className="text-white mt-2">{submissionResult.output[0].output}</pre>
+                            </div>
+                        )}
+                          {submissionResult && submissionResult.status !== 'Compilation Error' && (
+                            <div className="space-y-2">
+                                {JSON.parse(submissionResult.output).map((result, index) => (
+                                    <TestCaseResult key={index} result={result} index={index} />
+                                ))}
                             </div>
                         )}
                     </div>
