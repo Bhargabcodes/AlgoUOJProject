@@ -17,6 +17,7 @@ const ProblemSchema = new Schema({
     tags: [{ type: String }],
     defaultCode: { type: String, required: true },
     testCases: [TestCaseSchema],
+    timeLimit: { type: Number, required: true, default: 2000 }, // time limit in ms
 }, { timestamps: true });
 
 module.exports = mongoose.model('Problem', ProblemSchema);

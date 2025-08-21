@@ -6,7 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 
 
-// @route   POST /api/submissions
+// @route   POST /api/submissions/ans
 // @desc    Create a new code submission
 // @access  Private
 router.post('/', authMiddleware, createSubmission);

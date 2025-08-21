@@ -19,6 +19,7 @@ const AddProblemPage = () => {
         title: '',
         statement: '',
         difficulty: 'Easy',
+        timeLimit: 2000,
         tags: '',
         defaultCode: '',
         testCases: [{ input: '', expectedOutput: '' }],
@@ -51,7 +52,7 @@ const AddProblemPage = () => {
                 ...formData,
                 tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
             };
-            const { data } = await API.post('/problems/qn', payload);
+            const { data } = await API.post('/problems', payload);
             setStatus({ message: `Successfully created problem: "${data.title}"`, isError: false });
         } catch (err) {
             const errorMessage = err.response?.data?.error || 'An unexpected error occurred.';
@@ -63,27 +64,40 @@ const AddProblemPage = () => {
         <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">Create New Problem</h1>
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title, Difficulty, Tags */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Title, Difficulty, Time Limit, Tags */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
                         <Input name="title" value={formData.title} onChange={handleChange} required />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Difficulty</label>
-                        <select name="difficulty" value={formData.difficulty} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600">
+                        <select
+                            name="difficulty"
+                            value={formData.difficulty}
+                            onChange={handleChange}
+                            className="w-full mt-1 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+                        >
                             <option>Easy</option>
                             <option>Medium</option>
                             <option>Hard</option>
                         </select>
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Time Limit (ms)</label>
+                        <Input
+                            name="timeLimit"
+                            value={formData.timeLimit || ''}
+                            onChange={handleChange}
+                            type="text"
+                            placeholder="2000"
+                        />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (comma-separated)</label>
                         <Input name="tags" value={formData.tags} onChange={handleChange} />
                     </div>
                 </div>
-
-                {/* Statement and Default Code */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Problem Statement (Markdown supported)</label>
                     <textarea name="statement" rows="6" value={formData.statement} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" />

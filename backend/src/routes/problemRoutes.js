@@ -6,7 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 // @route   GET /api/problemsgetAll
 router.get('/getAll', getAllProblems);
 
-// @route   POST /api/problems/qns
-router.post('/qn', authMiddleware, createProblem);
+// @route   POST /api/problems
+router.post('/', authMiddleware, createProblem);
 
 module.exports = router;

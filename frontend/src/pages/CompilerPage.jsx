@@ -1,3 +1,4 @@
+//frontend\src\pages\CompilerPage.jsx
 import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
@@ -27,14 +28,13 @@ const TestCaseResult = ({ result, index }) => {
         }
     };
     const { icon, color } = getStatusInfo(result.status);
-    
+    console.log("askdjf", result)
     return (
         <div className="flex items-center justify-between p-2 bg-gray-800 rounded-md">
             <div className="flex items-center gap-2">
                 {icon}
-                <span className={`font-semibold ${color}`}>Test Case #{index + 1}</span>
+            <span className="text-gray-400 text-sm">{result.status}</span>
             </div>
-            <span className="text-gray-400 text-sm">{result.time.toFixed(2)} ms</span>
         </div>
     );
 };
@@ -62,7 +62,7 @@ const CompilerPage = ({ problem }) => {
             return;
         }
         try {
-            const { data } = await API.post('/submissions/answer', {
+            const { data } = await API.post('/submissions/', {
                 language: 'cpp',
                 code,
                 problemId: problem._id,
@@ -131,13 +131,27 @@ const CompilerPage = ({ problem }) => {
                                 <pre className="text-white mt-2">{submissionResult.output[0].output}</pre>
                             </div>
                         )}
-                          {submissionResult && submissionResult.status !== 'Compilation Error' && (
-                            <div className="space-y-2">
-                                {JSON.parse(submissionResult.output).map((result, index) => (
-                                    <TestCaseResult key={index} result={result} index={index} />
-                                ))}
-                            </div>
-                        )}
+                         {submissionResult && (
+  <div className="space-y-2">
+    {/* Handle error from backend */}
+    {submissionResult.error && (
+      <p className="text-red-400 font-bold">{submissionResult.error}</p>
+    )}
+
+    {/* Handle compilation/test case results */}
+    {submissionResult.output && (() => {
+      try {
+        const results = JSON.parse(submissionResult.output);
+        return results.map((result, index) => (
+          <TestCaseResult key={index} result={result} index={index} />
+        ));
+      } catch (err) {
+        console.error("Error parsing output:", err);
+        return <p className="text-red-400">Invalid output format</p>;
+      }
+    })()}
+  </div>
+)}
                     </div>
                 </div>
             </div>

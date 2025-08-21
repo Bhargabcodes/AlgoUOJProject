@@ -1,6 +1,7 @@
 //backend\src\controllers\submissionController.js
 const Submission = require('../models/Submission');
-const { problems } = require('../data/problemsData');
+const Problem = require('../models/Problem');
+
 const axios = require('axios');
 
 const COMPILER_SERVICE_URL = process.env.COMPILER_SERVICE_URL || 'http://localhost:4000';
@@ -9,16 +10,15 @@ const compareOutputs = (actual, expected) => {
     const normalize = (str) => String(str).replace(/\r\n/g, '\n').trim();
     return normalize(actual) === normalize(expected);
 };
-
+//console.log(req.body);
 exports.createSubmission = async (req, res) => {
     const { language = 'cpp', code, problemId } = req.body;
-    
     if (!req.user) {
         return res.status(401).json({ error: "User not authenticated." });
     }
     const userId = req.user.id;
 
-    const problem = problems.find(p => p.id === problemId);
+    const problem = await Problem.findOne({ _id: problemId });
     if (!problem) {
         return res.status(404).json({ error: "Problem not found." });
     }
@@ -28,6 +28,7 @@ exports.createSubmission = async (req, res) => {
     let hasFailed = false;
 
     try {
+        console.log(problem.testCases);
         // FIX: Use a traditional for loop to get the index 'i'
         for (let i = 0; i < problem.testCases.length; i++) {
             if (hasFailed) break;
