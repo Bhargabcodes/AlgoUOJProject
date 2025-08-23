@@ -11,12 +11,28 @@ if (!fs.existsSync(outputPath)) {
 const executeCpp = (filepath, input,timeLimit=2000) => {
   const jobId = path.basename(filepath).split('.')[0];
   const outPath = path.join(outputPath, `${jobId}.exe`);
-
+ // --- NEW: Cleanup function ---
+  // This function will delete the temporary files.
+  const cleanupFiles = () => {
+    // Delete the source code file
+    fs.unlink(filepath, (err) => {
+      if (err) console.error(`Failed to delete source file ${filepath}:`, err);
+    });
+    // Delete the compiled executable
+    fs.unlink(outPath, (err) => {
+      // We don't log an error if the file doesn't exist, as that's expected
+      // if compilation failed.
+      if (err && err.code !== 'ENOENT') {
+        console.error(`Failed to delete executable file ${outPath}:`, err);
+      }
+    });
+  };
   return new Promise((resolve, reject) => {
     // Step 1: Compile the C++ code using 'exec'. It's simple and effective for this.
     exec(`g++ "${filepath}" -o "${outPath}"`, (compileError, stdout, stderr) => {
       // If there's a compilation error, reject the promise immediately.
       if (compileError) {
+     cleanupFiles(); // Clean up files on compilation error
         return reject({ error: stderr, errorType: 'compilation' });
       }
       // If there are compilation warnings, log them but continue.
@@ -32,6 +48,7 @@ const executeCpp = (filepath, input,timeLimit=2000) => {
       // Set a timeout to kill the process if it runs for too long (e.g., 5 seconds).
       const timer = setTimeout(() => {
         childProcess.kill();
+        cleanupFiles(); // Clean up files on timeout
         reject({ 
           error: new Error("Time Limit Exceeded"), 
           stderr: "Your code took too long to execute and was terminated." 
@@ -55,6 +72,7 @@ const executeCpp = (filepath, input,timeLimit=2000) => {
       childProcess.on('close', (code) => {
         // IMPORTANT: Clear the timeout timer once the process is done.
         clearTimeout(timer);
+        cleanupFiles(); // Clean up after execution
          const endTime = process.hrtime(startTime);
        const executionTime = (endTime[0] * 1000 + endTime[1] / 1000000).toFixed(2); // Convert to milliseconds
         if (code !== 0) {
@@ -71,7 +89,7 @@ const executeCpp = (filepath, input,timeLimit=2000) => {
       // Handle errors related to the spawn process itself (e.g., file not found).
       childProcess.on('error', (spawnError) => {
         clearTimeout(timer);
-      
+       cleanupFiles(); // Clean up on spawn error
         reject({ error: spawnError });
       });
     });
