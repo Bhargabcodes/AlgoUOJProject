@@ -6,6 +6,7 @@ Dynamic Problem Management: The platform allows administrators to add new progra
 Real-time Code Judging: Submitted code is automatically compiled and executed against a suite of test cases. The user receives instant, detailed feedback on their submission's performance, including which test cases passed or failed.
 
 Advanced Verdicts: The judging system can produce a range of verdicts, including:
+
 ✅ Accepted: All test cases passed within the time limit.
 ❌ Wrong Answer: The code produced incorrect output for a test case.
 ⏳ Time Limit Exceeded: The code took too long to execute.
