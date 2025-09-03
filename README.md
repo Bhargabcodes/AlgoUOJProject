@@ -1,4 +1,5 @@
-OnlineJudge is a full-stack web application that simulates a competitive programming environment. It provides a platform for users to solve algorithmic challenges by writing and submitting code directly in the browser.
+OnlineJudge
+It is a full-stack web application that simulates a competitive programming environment. It provides a platform for users to solve algorithmic challenges by writing and submitting code directly in the browser.
 
 Key Features:
 Secure User Authentication: Users can create an account and log in using a secure system based on JSON Web Tokens (JWT).
