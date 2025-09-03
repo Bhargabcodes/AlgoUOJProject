@@ -8,8 +8,11 @@ Real-time Code Judging: Submitted code is automatically compiled and executed ag
 Advanced Verdicts: The judging system can produce a range of verdicts, including:
 
 ✅ Accepted: All test cases passed within the time limit.
+
 ❌ Wrong Answer: The code produced incorrect output for a test case.
+
 ⏳ Time Limit Exceeded: The code took too long to execute.
+
 💥 Compilation & Runtime Errors: The system catches and reports syntax or execution errors.
 
 Submission History: Logged-in users can view a list of all their past submissions, showing the problem, verdict, and date.
